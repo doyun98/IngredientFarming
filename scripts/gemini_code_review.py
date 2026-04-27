@@ -45,6 +45,8 @@ class GeminiCodeReview2:
     # 2. 파일 분류
     # -------------------------
     def classify_file(self, file_path: str) -> str:
+        print(f"file_path: {file_path}")
+        
         if file_path.endswith("UseCase.kt"):
             return "domain"
         elif file_path.endswith("RepositoryImpl.kt"):
@@ -195,7 +197,7 @@ class GeminiCodeReview2:
     def run(self):
         print("🚀 AI 코드 리뷰 시작")
         files = self.get_pr_files()
-        print("✅ 파일 가져오기 완료")
+        print(f"✅ 파일 가져오기 완료 \n {files}\n")
         filtered = []
 
         # 1차 필터
@@ -208,12 +210,13 @@ class GeminiCodeReview2:
             if f.get("additions", 0) + f.get("deletions", 0) < 5:
                 continue
 
+            print(f"Filtered Append: category - {category}, file - {f}")
             filtered.append((category, f))
 
         # 우선순위 정렬
         filtered.sort(key=lambda x: self.priority.get(x[0], 999))
 
-        print("✅ 파일 필터 완료")
+        print(f"✅ 파일 필터 완료 / 결과: {len(filtered)}개")
 
         all_reviews = []
 
@@ -236,7 +239,7 @@ class GeminiCodeReview2:
 
                 all_reviews.append(f"### 📄 {file_name}\n{review}")
 
-        print(f"✅ Gemini 코드 리뷰 완료")
+        print(f"✅ Gemini 코드 리뷰 완료 / 리뷰 개수: {len(all_reviews)}개")
 
         # 결과 코멘트 작성
         if all_reviews:
